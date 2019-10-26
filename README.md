@@ -30,4 +30,4 @@ Resume the training with `python main.py --resume --lr=0.01`
 
 ##Update
 
-2019.10.26: more useful for inputting and showing the parameters.
+2019.10.26:  more useful for inputting and showing the parameters.
