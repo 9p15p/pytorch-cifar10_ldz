@@ -13,7 +13,9 @@ from models import *
 from utils import format_time
 from utils import progress_bar
 
+# global parameters
 default_lr = 0.1
+matching_epoches = 200
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=default_lr, type=float, help='learning rate')
@@ -149,7 +151,7 @@ def test(epoch):
 
 
 timer1 = time.perf_counter()
-for epoch in range(start_epoch, 1 + start_epoch + 200):
+for epoch in range(start_epoch, 1 + start_epoch + matching_epoches):
     timer0 = time.process_time()
     train(epoch)
     test(epoch)
@@ -158,6 +160,6 @@ for epoch in range(start_epoch, 1 + start_epoch + 200):
     scheduler.step(best_acc)
 print("total_cost_time:", format_time(time.perf_counter() - timer1), "s")
 
-# 学起来每次改代码用git
+# 【】学起来每次改代码用git
 # 【】保存一个自己修改过的完美的代码。
 # 【】使用预训练模型
