@@ -1,22 +1,21 @@
 '''Train CIFAR10 with PyTorch.'''
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
+import argparse
+import os
+import time
 
+import torch.backends.cudnn as cudnn
+import torch.optim as optim
+import torch.optim.lr_scheduler as lr_scheduler
 import torchvision
 import torchvision.transforms as transforms
-
-import os
-import argparse
 
 from models import *
 from utils import progress_bar
 
+default_lr = 0.1
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
-parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
+parser.add_argument('--lr', default=default_lr, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 args = parser.parse_args()
 
@@ -49,7 +48,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-# net = ResNet18()
+net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
 # net = DenseNet121()
@@ -60,7 +59,7 @@ print('==> Building model..')
 # net = ShuffleNetG2()
 # net = SENet18()
 # net = ShuffleNetV2(1)
-net = EfficientNetB0()
+# net = EfficientNetB0()
 net = net.to(device)
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -72,11 +71,22 @@ if args.resume:
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
     checkpoint = torch.load('./checkpoint/ckpt.pth')
     net.load_state_dict(checkpoint['net'])
-    best_acc = checkpoint['acc']
-    start_epoch = checkpoint['epoch']
 
-criterion = nn.CrossEntropyLoss()
+    print("checkpoint:")
+    best_acc = checkpoint['acc']
+    print("last_best_acc:", best_acc)
+    start_epoch = checkpoint['epoch']
+    print("start_epoch:", start_epoch)
+
+    if args.lr != default_lr:
+        print("new_lr:", args.lr)
+    elif args.lr == default_lr:  # because lr is getting smaller, we don't consider the situation that we set lr back to 0.1
+        args.lr = checkpoint['lr']  # and if lr we get is 0.1 ,we see it as default value.
+        print("last_lr:", args.lr)
+
+criterion = nn.CrossEntropyLoss().to(device)
 optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10)
 
 # Training
 def train(epoch):
@@ -129,6 +139,7 @@ def test(epoch):
             'net': net.state_dict(),
             'acc': acc,
             'epoch': epoch,
+            'lr': optimizer.param_groups[0]["lr"],
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
@@ -136,6 +147,16 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+200):
+timer1 = time.perf_counter()
+for epoch in range(start_epoch, 1 + start_epoch + 200):
+    timer0 = time.process_time()
     train(epoch)
     test(epoch)
+    print("best_acc:", best_acc, "%% &cost_time:%f s" % (time.process_time() - timer0), " lr:",
+          optimizer.param_groups[0]["lr"])
+    scheduler.step(best_acc)
+print("total_cost_time:", time.perf_counter() - timer1, "s")
+
+# 学起来每次改代码用git
+# 【】保存一个自己修改过的完美的代码。
+# 【】使用预训练模型
