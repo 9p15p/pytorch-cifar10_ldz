@@ -10,6 +10,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 from models import *
+from utils import format_time
 from utils import progress_bar
 
 default_lr = 0.1
@@ -48,10 +49,10 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 # Model
 print('==> Building model..')
 # net = VGG('VGG19')
-net = ResNet18()
+# net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
-# net = DenseNet121()
+net = densenet_cifar()
 # net = ResNeXt29_2x64d()
 # net = MobileNet()
 # net = MobileNetV2()
@@ -155,7 +156,7 @@ for epoch in range(start_epoch, 1 + start_epoch + 200):
     print("best_acc:", best_acc, "%% &cost_time:%f s" % (time.process_time() - timer0), " lr:",
           optimizer.param_groups[0]["lr"])
     scheduler.step(best_acc)
-print("total_cost_time:", time.perf_counter() - timer1, "s")
+print("total_cost_time:", format_time(time.perf_counter() - timer1), "s")
 
 # 学起来每次改代码用git
 # 【】保存一个自己修改过的完美的代码。
