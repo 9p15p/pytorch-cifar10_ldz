@@ -27,3 +27,7 @@ I manually change the `lr` during training:
 - `0.001` for epoch `[250,350)`
 
 Resume the training with `python main.py --resume --lr=0.01`
+
+##Update
+
+2019.10.26: more useful for inputting and showing the parameters.
