@@ -28,6 +28,6 @@ I manually change the `lr` during training:
 
 Resume the training with `python main.py --resume --lr=0.01`
 
-##Update
+## Update
 
 2019.10.26:  more useful for inputting and showing the parameters.
