@@ -27,7 +27,9 @@ I manually change the `lr` during training:
 - `0.001` for epoch `[250,350)`
 
 Resume the training with `python main.py --resume --lr=0.01`
-
+## How to use
+First, in terminal,`python main.py  (-r)(--lr 0.1)`
+Second, in terminal,in the same folder, `tensorboard --logdir=runs`
 ## Update
 
 2019.10.26:  more useful for inputting and showing the parameters.
