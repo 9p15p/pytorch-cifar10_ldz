@@ -28,7 +28,7 @@ I manually change the `lr` during training:
 
 Resume the training with `python main.py --resume --lr=0.01`
 ## How to use
-First, in terminal,`python main.py  (-r)(--lr 0.1)`
+First, in terminal,`python main.py  (-r)(--lr 0.1)`\\
 Second, in terminal,in the same folder, `tensorboard --logdir=runs`
 ## Update
 
